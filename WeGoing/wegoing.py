@@ -35,6 +35,18 @@ def getCircles(dst):
     return cles
 
 
+def getPoints(cles):
+    points = []
+    for i in range(len(cles)):
+        point = []
+        if i < len(cles) - 1:
+            a = cles[i][:2]
+            b = [cles[i][0], cles[i + 1][1]]
+            c = cles[i + 1][:2]
+            r1 = cles[i][2]
+            r2 = cles[i + 1][2]
+
+
 def drawCircles(img, cles):
     for i in cles[:]:
         cv2.circle(img, (i[0], i[1]), i[2], (0, 0, 255), 5)  # 画圆
@@ -50,9 +62,13 @@ def showImg(img):
 
 
 def main():
-    dst = getImg('./02.png')  # 获取目标图像
+    dst = getImg('./01.png')  # 获取目标图像
 
     circles = getCircles(dst)
+
+    getPoints(circles)
+    # print(circles)
+
     dst = drawCircles(dst, circles)
 
     showImg(dst)
