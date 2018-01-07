@@ -32,25 +32,36 @@ def getCircles(dst):
 
     cles = circles[0, :, :]
     cles = np.around(np.around(cles))  # 四舍五入，减少计算量
+    cles = cles[np.lexsort(cles[:, :-1:].T)]
+    print(cles)
     return cles
-
-
-def getPoints(cles):
-    points = []
-    for i in range(len(cles)):
-        point = []
-        if i < len(cles) - 1:
-            a = cles[i][:2]
-            b = [cles[i][0], cles[i + 1][1]]
-            c = cles[i + 1][:2]
-            r1 = cles[i][2]
-            r2 = cles[i + 1][2]
 
 
 def drawCircles(img, cles):
     for i in cles[:]:
         cv2.circle(img, (i[0], i[1]), i[2], (0, 0, 255), 5)  # 画圆
         cv2.circle(img, (i[0], i[1]), 2, (255, 0, 255), 10)  # 画圆心
+    return img
+
+
+def getPoints(cles):
+    points = []
+    for i in range(len(cles)):
+        if i < len(cles) - 1:
+            a = cles[i][:2]
+            b = cles[i + 1][:2]
+            r1 = cles[i][2]
+            r2 = cles[i + 1][2]
+            px = b[0] - (r2 * (b[0] - a[0]) / (r1 + r2))
+            py = b[1] - (r2 * (b[1] - a[1]) / (r1 + r2))
+            points.append([px, py])
+    points = np.around(np.around(points))
+    return points
+
+
+def drawPoints(img, points):
+    for i in points[:]:
+        cv2.circle(img, (i[0], i[1]), 2, (255, 0, 0), 10)
     return img
 
 
@@ -62,16 +73,19 @@ def showImg(img):
 
 
 def main():
-    dst = getImg('./01.png')  # 获取目标图像
+    dst = getImg('./02.png')  # 获取目标图像
 
     circles = getCircles(dst)
 
-    getPoints(circles)
-    # print(circles)
+    points = getPoints(circles)
 
     dst = drawCircles(dst, circles)
 
+    dst = drawPoints(dst, points)
+
     showImg(dst)
+
+    cv2.imwrite('./create.png', dst)
 
 
 main()
