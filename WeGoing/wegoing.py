@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import cv2
+from cv2 import cv2
 import numpy as np
 
 """
@@ -13,29 +13,49 @@ import numpy as np
 跳跃：通过 adb 直接触发点击事件，比通过操作屏幕点击更加快速
 """
 
-img = cv2.imread('./01.png')
 
-dst = cv2.resize(img, None, fx=0.5, fy=0.5, interpolation=cv2.INTER_CUBIC)
+def getImg(fileName):
+    """
+    读取图片并将图片缩放为 1000 的宽度
+    """
+    img = cv2.imread(fileName)
+    width = img.shape[:1][0]
+    times = 1000 / width
+    dst = cv2.resize(img, None, fx=times, fy=times,
+                     interpolation=cv2.INTER_CUBIC)
+    return dst
 
-gray = cv2.cvtColor(dst, cv2.COLOR_RGB2GRAY)  # 灰度图像
 
-# hsv = cv2.cvtColor(dst, cv2.COLOR_BGR2HSV)
-# lower_color = np.array([49, 28, 59])
-# upper_color = np.array([58, 33, 70])
-# mask = cv2.inRange(hsv, lower_color, upper_color)
-# res = cv2.bitwise_and(dst, dst, mask=mask)
+def getCircles(dst):
+    gray = cv2.cvtColor(dst, cv2.COLOR_RGB2GRAY)  # 灰度图像
+    circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 100)
 
-circle = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, 100)
+    cles = circles[0, :, :]
+    cles = np.around(np.around(cles))  # 四舍五入，减少计算量
+    return cles
 
-cle = circle[0, :, :]
 
-cle = np.uint16(np.around(cle))
+def drawCircles(img, cles):
+    for i in cles[:]:
+        cv2.circle(img, (i[0], i[1]), i[2], (0, 0, 255), 5)  # 画圆
+        cv2.circle(img, (i[0], i[1]), 2, (255, 0, 255), 10)  # 画圆心
+    return img
 
-for i in cle[:]:
-    cv2.circle(dst, (i[0], i[1]), i[2], (0, 0, 255), 5)  # 画圆
-    cv2.circle(dst, (i[0], i[1]), 2, (255, 0, 255), 10)  # 画圆心
 
-cv2.namedWindow('WeGoing')
-cv2.imshow('WeGoing', dst)
-cv2.waitKey(0)
-cv2.destroyWindow()
+def showImg(img):
+    cv2.namedWindow('WeGoing')
+    cv2.imshow('WeGoing', img)
+    cv2.waitKey(0)
+    cv2.destroyWindow('WeGoing')
+
+
+def main():
+    dst = getImg('./02.png')  # 获取目标图像
+
+    circles = getCircles(dst)
+    dst = drawCircles(dst, circles)
+
+    showImg(dst)
+
+
+main()
