@@ -1,15 +1,14 @@
 """
-线性回归
+线性回归预测房价
 """
 import pandas as pd
-from sklearn import datasets, linear_model
-import numpy as np
+from sklearn import linear_model
 from matplotlib import pyplot as plt
 
 
 def get_data(file_name):
     """
-    读取csv文件并转换返回元组
+    读取csv文件并转换返回数据
     """
     data = pd.read_csv(file_name)
     x_parameter = []
@@ -36,6 +35,9 @@ def liner_modal_main(x_parameter, y_parameter, predice_value):
 
 
 def show_linear_line(x_parameter, y_parameter):
+    """
+    画线性回归线
+    """
     regr = linear_model.LinearRegression()  # 创建线性模型
     regr.fit(x_parameter, y_parameter)  # 训练
     plt.scatter(x_parameter, y_parameter, color='blue')
@@ -46,6 +48,9 @@ def show_linear_line(x_parameter, y_parameter):
 
 
 def main():
+    """
+    主函数
+    """
     x, y = get_data('./data/rate.csv')
     show_linear_line(x, y)
     predict_value = 700  # 预测的平方英尺
