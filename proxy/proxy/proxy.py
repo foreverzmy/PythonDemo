@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import json
+import re
 
 ip_txt = open('ip.txt', 'a')
 
@@ -19,7 +20,14 @@ class ProxyPool:
         self.url = url
 
     def start(self):
-        self._get_html()
+        """
+        开始运行
+        """
+        dom = self._get_html()
+        ip_selectors = self._get_port_selector(dom)
+        for ip_selector in ip_selectors:
+            port = self._find_model(ip_selector)
+            print(ip_selector.text + ':' + port)
 
     def _get_html(self):
         """
@@ -27,7 +35,33 @@ class ProxyPool:
         """
         res = self.session.get(self.url, headers=self.headers)
         dom = BeautifulSoup(res.text, 'lxml')
-        print(dom)
+        return dom
+
+    def _get_port_selector(self, dom):
+        """
+        获取 ip 所在选择器
+        """
+        ips = dom.find_all(text=re.compile(
+            r'(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])'))
+        ip_selectors = []
+        for ip in ips:
+            ip_selector = ip.parent
+            ip_selectors.append(ip_selector)
+        return ip_selectors
+
+    def _find_model(self, selector):
+        while(True):
+            selector = selector.parent
+            port = self._find_port(selector)
+            if port:
+                break
+        return port
+
+    @staticmethod
+    def _find_port(selector):
+        port = selector.find(text=re.compile(
+            r'^(\s|\'|\"*)\d{2,5}(\s|\'|\")*$'))
+        return port
 
 
 # def get_ip_list(url, headers):
@@ -74,7 +108,13 @@ class ProxyPool:
 
 
 if __name__ == '__main__':
-    proxy = ProxyPool('https://www.kuaidaili.com/free/inha/')
+    # http://cn-proxy.com/
+    # http://www.xicidaili.com/
+    # https://www.kuaidaili.com/free/inha/
+    # http://www.goubanjia.com/free/index.shtml
+    # https://proxy.mimvp.com/free.php
+    # http://www.data5u.com/free/index.shtml
+    proxy = ProxyPool('http://www.data5u.com/free/index.shtml')
     proxy.start()
     # def main():
     #     url = 'http://www.xicidaili.com/nn/'
