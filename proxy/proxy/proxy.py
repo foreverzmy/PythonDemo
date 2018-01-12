@@ -55,6 +55,10 @@ class ProxyPool:
     def _get_port_selector(self, dom):
         """
         获取 ip 所在选择器
+
+        Patameters
+        ---------
+        dom : 抓取的网页的 dom
         """
         ips = dom.find_all(
             text=re.compile(r'(?<![\.\d])(?:\d{1,3}\.){3}\d{1,3}(?![\.\d])'))
@@ -67,6 +71,10 @@ class ProxyPool:
     def _get_port(self, selector):
         """
         获取端口号
+        
+        Patameters
+        ---------
+        selector : ip 所在的元素
         """
         while True:
             selector = selector.parent
@@ -77,6 +85,13 @@ class ProxyPool:
 
     @staticmethod
     def _find_port(selector):
+        """
+        根据 ip 查找端口号
+
+        Patameters
+        ---------
+        selector : ip 所在的元素
+        """
         port = selector.find(
             text=re.compile(r'^(\s|\'|\"*)\d{2,5}(\s|\'|\")*$'))
         return port
@@ -84,6 +99,10 @@ class ProxyPool:
     def _test_ip(self, ip):
         """
         普通代理测试
+
+        Patameters
+        ---------
+        ip : 需要测试的 ip
         """
         proxies = {'http': 'http://' + ip}
         can = False
@@ -124,16 +143,12 @@ class ProxyPool:
 
 
 if __name__ == '__main__':
-    # 可以抓取的代理网站
-    #
-    #
-    #
-
     # 抓取失败的代理网站
     # https://proxy.mimvp.com/free.php
     # http://www.data5u.com/free/index.shtml
     # http://www.goubanjia.com/free/index.shtml
 
+    # 可以抓取的代理网站
     ip_sites = [
         'http://cn-proxy.com/', 'http://www.xicidaili.com/nn/',
         'https://www.kuaidaili.com/free/inha/'
