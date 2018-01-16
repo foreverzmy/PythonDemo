@@ -18,7 +18,7 @@ RUN apt-get install -y wget
 ## 安装 python 和 pip
 RUN apt-get install -y python3.6
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-RUN cd /usr/bin && ln -s python3.6m python
+RUN cd /usr/bin && rm -rf python && ln -s python3.6m python
 RUN python get-pip.py
 RUN rm -rf get-pip.py
 
