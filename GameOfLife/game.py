@@ -5,7 +5,6 @@ from copy import deepcopy
 from random import choice
 from cell import Cell
 
-
 WOELD_HIGH = 20  # 世界长度
 WOELD_WIDTH = 40  # 世界宽度
 ALIVE_CON = 3  # 复活条件
@@ -72,7 +71,7 @@ class GameManage(object):
                         current_cell.set_died()
             self.world = new_world
             level += 1
-            sleep(1)
+            sleep(.2)
 
 
 if __name__ == '__main__':
